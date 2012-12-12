@@ -59,11 +59,7 @@ static void *dload_mode_addr;
 
 /* Download mode master kill-switch */
 static int dload_set(const char *val, struct kernel_param *kp);
-#if defined(CONFIG_MACH_ACER_A9)
-static int download_mode = 0;
-#else
 static int download_mode = 1;
-#endif
 module_param_call(download_mode, dload_set, param_get_int,
 			&download_mode, 0644);
 
@@ -251,7 +247,7 @@ static int __init msm_restart_init(void)
 	dload_mode_addr = MSM_IMEM_BASE + DLOAD_MODE_ADDR;
 
 	/* Reset detection is switched on below.*/
-	set_dload_mode(download_mode?1:0);
+	set_dload_mode(1);
 #endif
 	msm_tmr0_base = msm_timer_get_timer0_base();
 	restart_reason = MSM_IMEM_BASE + RESTART_REASON_ADDR;
