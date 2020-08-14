@@ -1,0 +1,41 @@
+--- include/linux/skbuff.h
++++ include/linux/skbuff.h
+@@ -1623,6 +1613,8 @@ static inline int __skb_cow(struct sk_buff *skb, unsigned int headroom,
+ {
+ 	int delta = 0;
+ 
++	if (headroom < NET_SKB_PAD)
++		headroom = NET_SKB_PAD;
+ 	if (headroom > skb_headroom(skb))
+ 		delta = headroom - skb_headroom(skb);
+ 
+@@ -1994,13 +1986,8 @@ static inline bool skb_defer_rx_timestamp(struct sk_buff *skb)
+ /**
+  * skb_complete_tx_timestamp() - deliver cloned skb with tx timestamps
+  *
+- * PHY drivers may accept clones of transmitted packets for
+- * timestamping via their phy_driver.txtstamp method. These drivers
+- * must call this function to return the skb back to the stack, with
+- * or without a timestamp.
+- *
+  * @skb: clone of the the original outgoing packet
+- * @hwtstamps: hardware time stamps, may be NULL if not available
++ * @hwtstamps: hardware time stamps
+  *
+  */
+ void skb_complete_tx_timestamp(struct sk_buff *skb,
+@@ -2125,14 +2112,6 @@ static inline void nf_reset(struct sk_buff *skb)
+ #endif
+ }
+ 
+-static inline void nf_reset_trace(struct sk_buff *skb)
+-{
+-#if defined(CONFIG_NETFILTER_XT_TARGET_TRACE) || \
+-	defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
+-	skb->nf_trace = 0;
+-#endif
+-}
+-
+ /* Note: This doesn't put any conntrack and bridge info in dst. */
+ static inline void __nf_copy(struct sk_buff *dst, const struct sk_buff *src)
+ {
